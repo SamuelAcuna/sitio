@@ -23,13 +23,13 @@ REGIONES_CHILE = {
 }
 
 COMUNAS_POR_REGION = {
-    "Región de Arica y Parinacota": {
+    "REGION_ARICA_PARINACOTA": {
         "ARICA": "Arica",
         "CAMARONES": "Camarones",
         "PUTRE": "Putre",
         "GENERAL_LAGOS": "General Lagos"
     },
-    "Región de Tarapacá": {
+    "REGION_TARAPACA": {
         "IQUIQUE": "Iquique",
         "ALTO_HOSPICIO": "Alto Hospicio",
         "POZO_ALMONTE": "Pozo Almonte",
@@ -38,7 +38,7 @@ COMUNAS_POR_REGION = {
         "HUARA": "Huara",
         "PICA": "Pica"
     },
-    "Región de Antofagasta": {
+    "REGION_ANTOFAGASTA": {
         "ANTOFAGASTA": "Antofagasta",
         "MEJILLONES": "Mejillones",
         "SIERRA_GORDA": "Sierra Gorda",
@@ -49,7 +49,7 @@ COMUNAS_POR_REGION = {
         "TOCOPILLA": "Tocopilla",
         "MARIA_ELENA": "María Elena"
     },
-    "Región de Atacama": {
+    "REGION_ATACAMA": {
         "COPIAPO": "Copiapó",
         "CALDERA": "Caldera",
         "TIERRA_AMARILLA": "Tierra Amarilla",
@@ -60,7 +60,7 @@ COMUNAS_POR_REGION = {
         "FREIRINA": "Freirina",
         "ALTO_CARMEN": "Alto del Carmen"
     },
-    "Región de Coquimbo": {
+    "REGION_COQUIMBO": {
         "LA_SERENA": "La Serena",
         "COQUIMBO": "Coquimbo",
         "ANDACOLLO": "Andacollo",
@@ -77,7 +77,7 @@ COMUNAS_POR_REGION = {
         "PUNITAQUI": "Punitaqui",
         "RIO_HURTADO": "Río Hurtado"
     },
-    "Región de Valparaíso": {
+    "REGION_VALPARAISO": {
         "VALPARAISO": "Valparaíso",
         "CASABLANCA": "Casablanca",
         "CONCON": "Concón",
@@ -117,7 +117,7 @@ COMUNAS_POR_REGION = {
         "OLMUE": "Olmué",
         "VILLA_ALEMANA": "Villa Alemana"
     },
-    "Región del Libertador General Bernardo O'Higgins": {
+    "REGION_BERNARDO_OHIGGINS": {
         "RANCAGUA": "Rancagua",
         "CODEGUA": "Codegua",
         "COINCO": "Coinco",
@@ -152,7 +152,7 @@ COMUNAS_POR_REGION = {
         "PUMANQUE": "Pumanque",
         "SANTA_CRUZ": "Santa Cruz"
     },
-    "Región del Maule": {
+    "REGION_MAULE": {
         "TALCA": "Talca",
         "CONSTITUCION": "Constitución",
         "CUREPTO": "Curepto",
@@ -184,7 +184,7 @@ COMUNAS_POR_REGION = {
         "VILLA_ALEGRE": "Villa Alegre",
         "YERBAS_BUENAS": "Yerbas Buenas"
     },
-    "Región de Ñuble": {
+    "REGION_NUBLE": {
         "CHILLAN": "Chillán",
         "BULNES": "Bulnes",
         "COBQUECURA": "Cobquecura",
@@ -205,7 +205,7 @@ COMUNAS_POR_REGION = {
         "TREGUACO": "Treguaco",
         "YUNGAY": "Yungay"
     },
-    "Región del Biobío": {
+    "REGION_BIOBIO": {
         "CONCEPCION": "Concepción",
         "CORONEL": "Coronel",
         "CHIGUAYANTE": "Chiguayante",
@@ -240,7 +240,7 @@ COMUNAS_POR_REGION = {
         "Yumbel": "Yumbel",
         "Alto Biobío": "Alto Biobío"
     },
-    "Región de La Araucanía": {
+    "REGION_ARAUCANIA": {
         "Temuco": "Temuco",
         "Carahue": "Carahue",
         "Cunco": "Cunco",
@@ -274,7 +274,7 @@ COMUNAS_POR_REGION = {
         "Traiguén": "Traiguén",
         "Victoria": "Victoria"
     },
-    "Región de Los Ríos": {
+    "REGION_LOS_RIOS": {
         "Valdivia": "Valdivia",
         "Corral": "Corral",
         "Lanco": "Lanco",
@@ -288,7 +288,7 @@ COMUNAS_POR_REGION = {
         "Lago Ranco": "Lago Ranco",
         "Río Bueno": "Río Bueno"
     },
-    "Región de Los Lagos": {
+    "REGION_LOS_LAGOS": {
         "Puerto Montt": "Puerto Montt",
         "Calbuco": "Calbuco",
         "Cochamó": "Cochamó",
@@ -320,7 +320,7 @@ COMUNAS_POR_REGION = {
         "Hualaihué": "Hualaihué",
         "Palena": "Palena"
     },
-    "Región Aisén del General Carlos Ibáñez del Campo": {
+    "REGION_AISEN": {
         "Coyhaique": "Coyhaique",
         "Lago Verde": "Lago Verde",
         "Aysén": "Aysén",
@@ -332,7 +332,7 @@ COMUNAS_POR_REGION = {
         "Chile Chico": "Chile Chico",
         "Río Ibáñez": "Río Ibáñez"
     },
-    "Región de Magallanes y de la Antártica Chilena": {
+    "REGION_MAGALLANES": {
         "Punta Arenas": "Punta Arenas",
         "Laguna Blanca": "Laguna Blanca",
         "Río Verde": "Río Verde",
@@ -344,6 +344,40 @@ COMUNAS_POR_REGION = {
         "Timaukel": "Timaukel",
         "Natales": "Natales",
         "Torres del Paine": "Torres del Paine"
+    },
+    "REGION_METROPOLITANA": {
+        "Santiago": "Santiago",
+        "Cerrillos": "Cerrillos",
+        "Cerro Navia": "Cerro Navia",
+        "Conchalí": "Conchalí",
+        "El Bosque": "El Bosque",
+        "Estación Central": "Estación Central",
+        "Huechuraba": "Huechuraba",
+        "Independencia": "Independencia",
+        "La Cisterna": "La Cisterna",
+        "La Florida": "La Florida",
+        "La Granja": "La Granja",
+        "La Pintana": "La Pintana",
+        "La Reina": "La Reina",
+        "Las Condes": "Las Condes",
+        "Lo Barnechea": "Lo Barnechea",
+        "Lo Espejo": "Lo Espejo",
+        "Lo Prado": "Lo Prado",
+        "Macul": "Macul",
+        "Maipú": "Maipú",
+        "Ñuñoa": "Ñuñoa",
+        "Pedro Aguirre Cerda": "Pedro Aguirre Cerda",
+        "Peñalolén": "Peñalolén",
+        "Providencia": "Providencia",
+        "Pudahuel": "Pudahuel",
+        "Quilicura": "Quilicura",
+        "Quinta Normal": "Quinta Normal",
+        "Recoleta": "Recoleta",
+        "Renca": "Renca",
+        "San Joaquín": "San Joaquín",
+        "San Miguel": "San Miguel",
+        "San Ramón": "San Ramón",
+        "Vitacura": "Vitacura"
     }
 }
 

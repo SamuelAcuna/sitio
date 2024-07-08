@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto, Orden, Cliente, OrdenItem, Direccion
 from .forms import ProductoForm, CrearUsuario, CategoriaForm, OrdenForm,UpdateClienteForm
+from .choices import REGIONES_CHILE, COMUNAS_POR_REGION
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
@@ -138,14 +139,48 @@ def cart(request):
 def checkout(request):
     cliente = Cliente.objects.get(user=request.user)
     orden_incompleta = Orden.objects.filter(cliente=cliente, completada=False).first()
+    direcciones = Direccion.objects.filter(cliente=cliente)
+    if not orden_incompleta:
+        messages.error(request, "No hay una orden incompleta.")
+        return redirect('shop') 
+    
     orden_incompleta.calcular_total()
-    orden_incompleta.completada = True
     orden_incompleta.save()
     ordenes=OrdenItem.objects.filter(orden=orden_incompleta)
+    
+    if request.method == "POST":
+        direccion_id = request.POST.get("direccion")
+        nueva_direccion = request.POST.get("nueva_direccion")
+        nueva_region = request.POST.get("nueva_region")
+        nueva_ciudad = request.POST.get("nueva_ciudad")
+        nuevo_codigo_postal = request.POST.get("nuevo_codigo_postal")
+        
+        
+        if nueva_direccion and nueva_region and nueva_ciudad and nuevo_codigo_postal:
+            # Guardar la nueva dirección en la base de datos
+            direccion = Direccion.objects.create(
+                cliente=cliente,
+                direccion=nueva_direccion,
+                region=nueva_region,
+                ciudad=nueva_ciudad,
+                codigo_postal=nuevo_codigo_postal,
+                tipo='envio'
+            )
+            # Redirigir de vuelta a la página de checkout después de guardar
+            return redirect('checkout')
+        elif direccion_id:
+            direccion = Direccion.objects.get(id=direccion_id)
+        else:
+            direccion = None
+    
     datos={
         'cliente':cliente,
         'orden':orden_incompleta,
-        'ordenes':ordenes
+        'ordenes':ordenes,
+        'direcciones': direcciones,
+        'REGIONES_CHILE': REGIONES_CHILE,
+        'COMUNAS_POR_REGION': COMUNAS_POR_REGION,
+        
     }
     return render(request, 'app/checkout.html',datos)
 

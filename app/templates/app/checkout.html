@@ -17,11 +17,58 @@
 <div class="untree_co-section">
   <div class="container">
       <div class="col-md-6">
-        <form method="post">
+        <form method="post" action="">
           {% csrf_token %}
-         
+          <!-- Otras opciones del formulario -->
+          <div class="form-group">
+            <label for="direccion">Seleccione Dirección:</label>
+            <select class="form-control" id="direccion" name="direccion">
+              <option value="">Retiro en tienda</option>
+              {% for direccion in direcciones %}
+                <option value="{{ direccion.id }}">{{ direccion.direccion }}, {{ direccion.ciudad }}, {{ direccion.region }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        
+          <!-- Collapse para agregar nueva dirección -->
+          <div class="border p-3 mb-3">
+            <h3 class="h6 mb-0">
+              <a class="d-block" data-bs-toggle="collapse" href="#collapseNuevaDireccion" role="button" aria-expanded="false" aria-controls="collapseNuevaDireccion">
+                Agregar nueva dirección
+              </a>
+            </h3>
+        
+            <div class="collapse" id="collapseNuevaDireccion">
+              <div class="py-2">
+                <!-- Formulario para nueva dirección -->
+                <div class="form-group">
+                  <label for="nueva_direccion">Dirección:</label>
+                  <input type="text" class="form-control" id="nueva_direccion" name="nueva_direccion">
+                </div>
+                <div class="form-group">
+                  <label for="nueva_region">Región:</label>
+                  <select class="form-control" id="nueva_region" name="nueva_region" onchange="cargarComunas()">
+                    <option value="">Selecciona una región</option>
+                    {% for key, value in REGIONES_CHILE %}
+                      <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="nueva_ciudad">Ciudad:</label>
+                  <select class="form-control" id="nueva_ciudad" name="nueva_ciudad">
+                    <option value="">Selecciona una ciudad</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="nuevo_codigo_postal">Código Postal:</label>
+                  <input type="text" class="form-control" id="nuevo_codigo_postal" name="nuevo_codigo_postal">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Agregar dirección</button>
+            </div>
+          </div>
         </form>
-
 
 
 
@@ -115,7 +162,31 @@
     <!-- </form> -->
   </div>
 </div>
+<script>
+  const comunasPorRegion = {{ COMUNAS_POR_REGION|safe }};
 
+  function cargarComunas() {
+    const regionSelect = document.getElementById("nueva_region");
+    const ciudadSelect = document.getElementById("nueva_ciudad");
+    const selectedRegion = regionSelect.value;
+
+    // Vaciar las opciones de ciudad
+    ciudadSelect.innerHTML = '<option value="">Selecciona una ciudad</option>';
+    console.log(selectedRegion)
+    // Agregar las comunas correspondientes a la región seleccionada
+    if (selectedRegion in comunasPorRegion) {
+      console.log('pasoif')
+      const comunas = comunasPorRegion[selectedRegion];
+      Object.keys(comunas).forEach(key => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.text = comunas[key];
+        ciudadSelect.appendChild(option);
+      });
+    }
+    console.log('paso')
+  }
+</script>
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/tiny-slider.js"></script>
 <script src="js/custom.js"></script>
