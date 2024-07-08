@@ -24,24 +24,6 @@
   crossorigin="anonymous"
 ></script>
 <script src="js/scripts.js"></script>
-<script>
-  function confirmPopup() {
-    $("#confirmationModal").modal("show");
-    document.getElementById("popup").style.display = "block";
-  }
-
-  function closePopup() {
-    $("#confirmationModal").modal("hide");
-    document.getElementById("popup").style.display = "none";
-  }
-
-  function addProduct() {
-    // Aquí puedes agregar la lógica para agregar el producto a la base de datos o realizar cualquier otra acción necesaria
-    alert("¡Producto agregado correctamente!");
-    $("#confirmationModal").modal("hide");
-    document.getElementById("productForm").reset(); // Limpiar el formulario después de agregar el producto
-  }
-</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
