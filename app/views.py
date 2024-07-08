@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+from .services import OrderService
 
 
 def detalleorden(request,id):
@@ -234,15 +235,15 @@ def shop(request):
 
 def thankyou(request):
     if request.method == 'POST':
-        id = request.POST['orden']
-    orden = Orden.objects.filter(id=id).first()
-    orden.completada = True
-    orden.save()
-    datos={
-        'orden':orden
-    }
-    print(orden)
-    return render(request, 'app/thankyou.html',datos)
+        orden_id = request.POST['orden']
+        
+        order_service = OrderService(orden_id)
+        order_service.complete_order()
+
+        orden = order_service.orden  # Obtener la orden desde el servicio
+        datos = {'orden': orden}
+
+        return render(request, 'app/thankyou.html', datos)
 
 def dash(request):
     return render(request, 'dash/index.html')

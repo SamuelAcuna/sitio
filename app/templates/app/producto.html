@@ -17,6 +17,7 @@
 									<h1 class="display-5 fw-bolder">{{p.nombre}}</h1>
 									<div class="fs-5 mb-5"><span class="text-decoration-line-through">${{p.precio|intcomma}}</span><span>${{p.precio|intcomma}}</span></div>
 									<p class="lead">{{p.descripcion}}</p>
+									<p class="lead">Stock disponible: {{p.stock}}</p>
 									<div class="d-flex"></div>
 									<form method="POST" action="{% url 'cart' %}">
 										{% csrf_token %}
