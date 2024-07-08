@@ -73,6 +73,14 @@ def cart(request):
                 product_id = request.POST.get('productoid')
                 cantidad = int(request.POST.get('cantidad'))
                 
+                
+                # Obtener el producto y verificar el stock
+                producto = Producto.objects.get(id=product_id)
+                if cantidad > producto.stock:
+                    cantidad = producto.stock  # Asignar la cantidad máxima de stock disponible
+                    messages.warning(request, f'La cantidad solicitada excede el stock disponible. Se ha ajustado a {producto.stock}.')
+                
+                
                 # Obtener el producto y calcular el precio del item
                 producto = Producto.objects.get(id=product_id)
                 precio_item = producto.precio * cantidad
@@ -108,13 +116,28 @@ def cart(request):
                 cantidad = int(request.POST.get('cantidad'))
                 producto = Producto.objects.get(id=product_id)
                 
+                # Verificar el stock
+                if cantidad > producto.stock:
+                    cantidad = producto.stock  # Asignar la cantidad máxima de stock disponible
+                    messages.warning(request, f'La cantidad solicitada excede el stock disponible. Se ha ajustado a {producto.stock}.')
                 # Calcular el precio del item
                 precio_item = producto.precio * cantidad
                 
                 orden_incompleta = Orden.objects.filter(cliente=cliente, completada=False).first()
                 
                 if orden_incompleta:
-                    item = OrdenItem.objects.create(orden=orden_incompleta, producto=producto, cantidad=cantidad, precio=precio_item)
+                    item_existente = OrdenItem.objects.filter(orden=orden_incompleta, producto=producto).first()
+                    if item_existente:
+                        nueva_cantidad = item_existente.cantidad + cantidad
+                        if nueva_cantidad > producto.stock:
+                            nueva_cantidad = producto.stock  # Asignar la cantidad máxima de stock disponible
+                            messages.warning(request, f'La cantidad solicitada excede el stock disponible. Se ha ajustado a {producto.stock}.')
+                        item_existente.cantidad = nueva_cantidad
+                        item_existente.precio = producto.precio * nueva_cantidad
+                        item_existente.save()
+                    else:
+                        OrdenItem.objects.create(orden=orden_incompleta, producto=producto, cantidad=cantidad, precio=precio_item)
+                
                 else:
                     nueva_orden = Orden.objects.create(cliente=cliente)
                     item = OrdenItem.objects.create(orden=nueva_orden, producto=producto, cantidad=cantidad, precio=precio_item)
