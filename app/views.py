@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from .services import OrderService
 from django.http import Http404
 from .models import Orden
+from .forms import ModificarPedidoForm  # Importa el formulario ModificarPedidoForm
 
 
 
@@ -383,4 +384,25 @@ def crear_producto(request):
             return redirect('tabla_producto')  # Redirige a la página deseada después de guardar el formulario
     else:
         form = ProductoForm()
-    return render(request, 'dash/crear_producto.html', {'form': form})
+    return render(request, 'dash/crear_producto.html', {'form': form});
+
+def crear_producto(request):
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('tabla_producto')  # Redirige a la página deseada después de guardar el formulario
+    else:
+        form = ProductoForm()
+    return render(request, 'dash/crear_producto.html', {'form': form});
+
+def lista_productos(request):
+    estado = request.GET.get('estado')
+    if estado == 'con_stock':
+        productos = Producto.objects.filter(stock__gt=0)
+    elif estado == 'sin_stock':
+        productos = Producto.objects.filter(stock=0)
+    else:
+        productos = Producto.objects.all()
+
+    return render(request, 'tu_app/lista_productos.html', {'productos': productos})
