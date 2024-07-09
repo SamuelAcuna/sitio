@@ -6,7 +6,7 @@
     <div class="container-fluid px-4">
         <h1 class="mt-4">Clientes</h1>
         <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Dashboard</a></li>
             <li class="breadcrumb-item active">Clientes</li>
         </ol>
         
@@ -31,6 +31,7 @@
                             <th>Apellido</th>
                             <th>Email</th>
                             <th>Telefono</th>
+                            <th>Gestion</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -40,17 +41,46 @@
                             <th>Apellido</th>
                             <th>Email</th>
                             <th>Telefono</th>
+                            <th>Gestion</th>
                         </tr>
                     </tfoot>
                     <tbody>
-                        {% for p in clientes %}
+                        {% for cliente in clientes %}
                         <tr>
-                            <td>{{ p.id }}</td>
-                            <td>{{ p.nombre }}</td>
-                            <td>{{ p.apellidos }}</td>
-                            <td>{{ p.email }}</td>
-                            <td>{{ p.telefono }}</td>
+                            <td>{{ cliente.id }}</td>
+                            <td>{{ cliente.nombre }}</td>
+                            <td>{{ cliente.apellidos }}</td>
+                            <td>{{ cliente.email }}</td>
+                            <td>{{ cliente.telefono }}</td>
+                            <td>
+                                <a href="{% url 'modificarcliente' cliente.id %}" class="btn btn-info text-light shadow rounded">Modificar</a>
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarClienteModal{{ cliente.id }}">
+                                    Eliminar
+                                </button>
+                            </td>
                         </tr>
+                        <!-- Modal para confirmar eliminación -->
+                        <div class="modal fade" id="eliminarClienteModal{{ cliente.id }}" tabindex="-1" aria-labelledby="eliminarClienteModalLabel{{ cliente.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="eliminarClienteModalLabel{{ cliente.id }}">Confirmar eliminación</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Está seguro de que desea eliminar el cliente?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <form method="POST" action="{% url 'tabla_clientes' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="clienteid" value="{{ cliente.id }}">
+                                            <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         {% endfor %}
                     </tbody>
                 </table>

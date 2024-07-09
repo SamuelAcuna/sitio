@@ -9,7 +9,7 @@ class Cliente(models.Model):
     apellidos = models.CharField(max_length=255)
     email = models.EmailField(blank=True, null=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
-
+    eliminado = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.nombre} {self.apellidos}"
     

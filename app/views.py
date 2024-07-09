@@ -12,7 +12,22 @@ import requests
 from django.http import JsonResponse
 
 
+def modificarcliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)  # Cambia cliente a Cliente
+    form = UpdateClienteForm(instance=cliente)  # Pasar la instancia del cliente al formulario
 
+    if request.method == "POST":
+        form = UpdateClienteForm(data=request.POST, files=request.FILES, instance=cliente)  # Usar la instancia del cliente
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cliente Modificado')
+            return redirect('tabla_clientes') 
+
+    datos = {
+        "cliente": cliente,
+        "form": form,  
+    }
+    return render(request, 'dash/modificarcliente.html', datos)
 
 def modificarorden(request,id):
     orden=get_object_or_404(Orden, id=id)
@@ -424,11 +439,22 @@ def password(request):
     return render(request, 'dash/password.html')
 
 def tabla_clientes(request):
-    clientes=Cliente.objects.all()
-    datos={
-        "clientes":clientes
-    }
+    clientes = Cliente.objects.filter(eliminado=False)
     
+    if request.method == "POST":
+        cliente_id = request.POST.get("clienteid")
+        try:
+            cliente = get_object_or_404(Cliente, id=cliente_id)
+            cliente.eliminado = True
+            cliente.save()
+            messages.success(request, 'El cliente ha sido eliminado correctamente.')
+        except Exception as e:
+            messages.error(request, f'Error al eliminar cliente: {str(e)}')
+
+    datos = {
+        "clientes": clientes
+    }
+
     return render(request, 'dash/tabla_clientes.html', datos)
 
 def tabla_ordenes(request):
