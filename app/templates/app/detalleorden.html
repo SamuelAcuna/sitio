@@ -39,6 +39,9 @@
               <strong>Fecha de Creación:</strong> {{ orden.fecha_creacion }}
             </p>
             <p class="card-text">
+              <strong>Estados de orden:</strong> {{ orden.get_estado }}
+            </p>
+            <p class="card-text">
               <strong>Dirección:</strong> 
               {% if orden.direccion_envio == None %}
                 Retiro en tienda

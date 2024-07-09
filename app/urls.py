@@ -7,6 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('modificarorden/<id>', modificarorden, name='modificarorden'),
     path('detalleorden/<id>', detalleorden, name='detalleorden'),
     path('misordenes/', misordenes, name='misordenes'),
     path('misdirecciones/', misdirecciones, name='misdirecciones'),
@@ -30,7 +31,7 @@ urlpatterns = [
     path('dash/agregar_producto/', agregar_producto, name='agregar_producto'),
     path('dash/agregar_categoria/', agregar_categoria, name='agregar_categoria'),
     path('dash/agregar_orden/', agregar_orden, name='agregar_orden'),
-    path('dash/modificar_producto/', modificar_producto, name='modificar_producto'),
+    path('dash/modificar_producto/<id>', modificar_producto, name='modificar_producto'),
     path('dash/formulario_cliente/', formulario_cliente, name='formulario_cliente'),
     path('dash/modificar_cliente/', modificar_cliente, name='modificar_cliente'),
     path('dash/agrega/', agrega, name='agrega'),

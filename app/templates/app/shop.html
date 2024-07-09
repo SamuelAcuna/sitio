@@ -23,7 +23,7 @@
       <div class="col-12 col-md-4 col-lg-3 mb-5">
         <a class="product-item" href="{% url "producto" p.id %}">
           <img
-            src="{{p.imagen.url}}"
+            src="{{p.get_imagen_url}}"
             class="img-fluid product-thumbnail"
           />
           <h3 class="product-title">{{p.nombre}}</h3>

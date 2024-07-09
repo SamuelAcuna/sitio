@@ -36,7 +36,17 @@ class Producto(models.Model):
     stock = models.IntegerField()
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
+    eliminado = models.BooleanField(default=False)
+    
+    def get_imagen_url(self):
+        if self.imagen and hasattr(self.imagen, 'url'):
+            return self.imagen.url
+        else:
+            # URL de imagen por defecto o placeholder
+            return '/media/productos/defecto.png'  # Reemplaza con la URL deseada
 
+    def __str__(self):
+        return self.nombre
     def get_precio(self):
         return self.precio
 
@@ -50,6 +60,7 @@ class Direccion(models.Model):
     ciudad = models.CharField(max_length=100, choices=COMUNAS_POR_REGION)
     codigo_postal = models.CharField(max_length=20)
     tipo = models.CharField(max_length=50)  # 'envio' o 'facturacion'
+    eliminado = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.direccion}, {self.ciudad}, {self.region}"
@@ -63,9 +74,12 @@ class Orden(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     completada = models.BooleanField(default=False)
-    estado = models.CharField(max_length=100, choices=ESTADO_ENVIO, null=True, blank=True)
+    estado = models.CharField(max_length=100, choices=ESTADO_ENVIO,default="EN_PREPARACION", null=True, blank=True)
     direccion_envio = models.ForeignKey(Direccion, on_delete=models.SET_NULL, null=True, blank=True)
     total = models.IntegerField(blank=True, null=True)
+    eliminado = models.BooleanField(default=False)
+    def get_estado(self):
+        return dict(ESTADO_ENVIO).get(self.estado)
 
     def __str__(self):
         return f"Orden {self.id} - Cliente: {self.cliente}"
@@ -76,6 +90,7 @@ class Orden(models.Model):
         self.total = total
         self.save()
         return total
+
 
 class OrdenItem(models.Model):
     orden = models.ForeignKey(Orden, on_delete=models.CASCADE)
