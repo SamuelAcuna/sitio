@@ -25,6 +25,11 @@ class OrdenForm(forms.ModelForm):
     class Meta:
         model = Orden
         fields = '__all__'
+    def clean_total(self):
+        total = self.cleaned_data.get('total')
+        if total is not None and total < 0:
+            raise forms.ValidationError("El total no puede ser negativo.")
+        return total
 
 class CategoriaForm(forms.ModelForm):
 
