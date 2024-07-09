@@ -2,61 +2,84 @@
 {% load static %}
 {% block contents %}
 
-
-                <main>
-                    <div class="container-fluid px-4">
-                        <h1 class="mt-4">Clientes</h1>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Clientes</li>
-                        </ol>
-                        
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                Lista de Clientes
-                            </div>
-                            <div class="card-body">
-                                
-                                <table id="datatablesSimple">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Nombre</th>
-                                            <th>Apellido</th>
-                                            <th>Email</th>
-                                            <th>Telefono</th>
-                                            
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Nombre</th>
-                                            <th>Apellido</th>
-                                            <th>Email</th>
-                                            <th>Telefono</th>
-                                           
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        {% for p in clientes %}
-                                        <tr>  <!--   'nombre', 'precio', 'stock', 'categoria'-->
-                                            <td>{{p.id}}</td>
-                                            <td>{{p.nombre}}</td>
-                                            <td>{{p.apellidos}}</td>
-                                            <td>{{p.email}}</td>
-                                            <td>{{p.telefono}}</td>
-                                            
-                                        </tr>
-                                        {% endfor %}
-                                          
-                                          
-                                    </tbody>
-                                    
-                                </table>
-                            </div>
-                        </div>
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Clientes</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+            <li class="breadcrumb-item active">Clientes</li>
+        </ol>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Lista de Clientes
+            </div>
+            <div class="card-body">
+                <!-- Barra de búsqueda para filtrar por nombre -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" id="searchBox" class="form-control" placeholder="Filtrar por nombre">
                     </div>
-                </main>
-                {% endblock contents %}
+                </div>
+                
+                <table id="datatablesSimple" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Email</th>
+                            <th>Telefono</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Email</th>
+                            <th>Telefono</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for p in clientes %}
+                        <tr>
+                            <td>{{ p.id }}</td>
+                            <td>{{ p.nombre }}</td>
+                            <td>{{ p.apellidos }}</td>
+                            <td>{{ p.email }}</td>
+                            <td>{{ p.telefono }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Script para filtrar la tabla -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchBox = document.getElementById('searchBox');
+        searchBox.addEventListener('keyup', function() {
+            const filter = searchBox.value.toLowerCase();
+            const rows = document.querySelectorAll('#datatablesSimple tbody tr');
+
+            rows.forEach(row => {
+                const nameCell = row.querySelector('td:nth-child(2)'); // Segunda columna (Nombre)
+                if (nameCell) {
+                    const name = nameCell.textContent.toLowerCase();
+                    if (name.includes(filter)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock contents %}

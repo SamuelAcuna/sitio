@@ -1,200 +1,202 @@
-{% extends "app/base.html" %} 
-{% load static %} 
+{% extends "app/base.html" %}
+{% load static %}
 {% block contenido %}
-<style>
-    /* Estilos adicionales para centrar y fondo verde oscuro */
-    .centrado {
-        background-color: #3d3d3d; /* Color verde oscuro */
-        color: white; /* Texto en blanco para contraste */
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 50px; /* Espacio arriba */
-    }
-
-    /* Estilo para el texto "Agregar nueva dirección" */
-    .agregar-nueva {
-        color: white; /* Texto blanco */
-    }
-</style>
-
+{% load crispy_forms_tags %}
 <!-- Start Hero Section -->
 <div class="hero">
-    <div class="container">
-        <div class="row justify-content-between">
-            <div class="col-lg-5">
-                <div class="intro-excerpt">
-                    <h1>Pago</h1> <!-- Título de la sección -->
-                </div>
-            </div>
-            <div class="col-lg-7"></div> <!-- Columna vacía -->
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-lg-5">
+        <div class="intro-excerpt">
+          <h1>Pago</h1>
         </div>
+      </div>
+      <div class="col-lg-7"></div>
     </div>
+  </div>
 </div>
 <!-- End Hero Section -->
 
-<!-- Start Main Section -->
-<div class="untree_co-section centrado"> <!-- Agregar clase "centrado" para el fondo verde oscuro -->
-    <div class="container">
-        <div class="row">
-            <!-- Columna para el formulario de selección de dirección -->
-            <div class="col-md-6">
-                <form method="post" action="">
-                    {% csrf_token %}
-                    <!-- Selección de dirección existente -->
-                    <div class="form-group">
-                        <label for="direccion">Seleccione Dirección:</label>
-                        <select class="form-control" id="direccion" name="direccion">
-                            <option value="">Retiro en tienda</option>
-                            {% for direccion in direcciones %}
-                            <option value="{{ direccion.id }}">{{ direccion.direccion }}, {{ direccion.ciudad }}, {{ direccion.region }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Collapse para agregar nueva dirección -->
-                    <div class="border p-3 mb-3">
-                        <h3 class="h6 mb-0">
-                            <a class="d-block agregar-nueva" data-bs-toggle="collapse" href="#collapseNuevaDireccion" role="button" aria-expanded="false" aria-controls="collapseNuevaDireccion">
-                                Agregar nueva dirección
-                            </a>
-                        </h3>
-
-                        <div class="collapse" id="collapseNuevaDireccion">
-                            <div class="py-2">
-                                <!-- Formulario para nueva dirección -->
-                                <div class="form-group">
-                                    <label for="nueva_direccion">Dirección:</label>
-                                    <input type="text" class="form-control" id="nueva_direccion" name="nueva_direccion">
-                                </div>
-                                <div class="form-group">
-                                    <label for="nueva_region">Región:</label>
-                                    <select class="form-control" id="nueva_region" name="nueva_region" onchange="cargarComunas()">
-                                        <option value="">Selecciona una región</option>
-                                        {% for key, value in REGIONES_CHILE %}
-                                        <option value="{{ key }}">{{ value }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="nueva_ciudad">Ciudad:</label>
-                                    <select class="form-control" id="nueva_ciudad" name="nueva_ciudad">
-                                        <option value="">Selecciona una ciudad</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="nuevo_codigo_postal">Código Postal:</label>
-                                    <input type="text" class="form-control" id="nuevo_codigo_postal" name="nuevo_codigo_postal">
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Agregar dirección</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <!-- Fin de la columna del formulario de dirección -->
-
-            <!-- Columna para la sección "Tu orden" -->
-            <div class="col-md-6">
-                <div class="row mb-5">
-                    <div class="col-md-12">
-                        <h2 class="h3 mb-3 text-white">Tu orden</h2>
-                        <div class="p-3 p-lg-5 border bg-white">
-                            <table class="table site-block-order-table mb-5">
-                                <thead>
-                                    <tr>
-                                        <th>Producto</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for o in ordenes %}
-                                    <tr>
-                                        <td>{{ o.producto.nombre }} <strong class="mx-2">x</strong> {{ o.cantidad }}</td>
-                                        <td>${{ o.precio }}</td>
-                                    </tr>
-                                    {% endfor %}
-
-                                    <tr>
-                                        <td class="text-black font-weight-bold">
-                                            <strong>Total</strong>
-                                        </td>
-                                        <td class="text-black font-weight-bold">
-                                            <strong>${{ orden.total }}</strong>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <!-- Métodos de pago -->
-                            <div class="border p-3 mb-3">
-                                <h3 class="h6 mb-0">
-                                    <a class="d-block" data-bs-toggle="collapse" href="https://portales.bancochile.cl/personas" role="button" aria-expanded="false" aria-controls="collapsecheque">Transferencia</a>
-                                </h3>
-
-                                <div class="collapse" id="collapsecheque">
-                                    <div class="py-2">
-                                        <p class="mb-0"></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="border p-3 mb-5">
-                                <h3 class="h6 mb-0">
-                                    <a class="d-block" data-bs-toggle="collapse" href="https://www.paypal.com/cl/home" role="button" aria-expanded="false" aria-controls="collapsepaypal">Paypal</a>
-                                </h3>
-
-                                <div class="collapse" id="collapsepaypal">
-                                    <div class="py-2"></div>
-                                </div>
-                            </div>
-
-                            <!-- Formulario de pago -->
-                            <div class="form-group">
-                                <form method="POST" action="{% url 'thankyou' %}">
-                                    {% csrf_token %}
-                                    <!-- Campos del formulario -->
-                                    <input type="hidden" id="orden" name="orden" value="{{ orden.id }}"/>
-                                    <button class="btn btn-black btn-lg py-3 btn-block" type="submit">Pagar</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+<div class="untree_co-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <form method="post" action="">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="direccion" class="form-label">Seleccione Dirección:</label>
+            <div class="card mb-3">
+              <div class="card-header">
+                <h5>Direcciones disponibles</h5>
+              </div>
+              <div class="card-body">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" id="retiro_tienda" name="direccion" value="" required>
+                  <label class="form-check-label" for="retiro_tienda">
+                    Retiro en tienda
+                  </label>
                 </div>
+                {% for direccion in direcciones %}
+                  <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" id="direccion{{ direccion.id }}" name="direccion" value="{{ direccion.id }}" required>
+                    <label class="form-check-label" for="direccion{{ direccion.id }}">
+                      {{ direccion.direccion }}, {{ direccion.get_ciudad_display }}, {{ direccion.get_region_display }}
+                    </label>
+                  </div>
+                {% endfor %}
+              </div>
             </div>
-            <!-- Fin de la columna de la sección "Tu orden" -->
+          </div>
+
+          <!-- Collapse para agregar nueva dirección -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <h5 class="h6 mb-0">
+                <a class="d-block" data-bs-toggle="collapse" href="#collapseNuevaDireccion" role="button" aria-expanded="false" aria-controls="collapseNuevaDireccion">
+                  <i class="bi bi-plus-circle me-2"></i> Agregar nueva dirección
+                </a>
+              </h5>
+            </div>
+            <div class="collapse" id="collapseNuevaDireccion">
+              <div class="card-body">
+                <!-- Formulario para nueva dirección -->
+                <div class="form-group mb-3">
+                  <label for="nueva_direccion" class="form-label">Dirección:</label>
+                  <input type="text" class="form-control" id="nueva_direccion" name="nueva_direccion">
+                </div>
+                <div class="form-group mb-3">
+                  <label for="nueva_region" class="form-label">Región:</label>
+                  <select class="form-control" id="nueva_region" name="nueva_region" onchange="cargarComunas()" required>
+                    <option value="">Selecciona una región</option>
+                    {% for key, value in REGIONES_CHILE %}
+                      <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="nueva_ciudad" class="form-label">Ciudad:</label>
+                  <select class="form-control" id="nueva_ciudad" name="nueva_ciudad" required>
+                    <option value="">Selecciona una ciudad</option>
+                  </select>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="nuevo_codigo_postal" class="form-label">Código Postal:</label>
+                  <input type="text" class="form-control" id="nuevo_codigo_postal" name="nuevo_codigo_postal">
+                </div>
+                <button type="submit" class="btn btn-primary">Agregar dirección</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-6">
+        <div class="row mb-5">
+          <div class="col-md-12">
+            <h2 class="h3 mb-3 text-black">Tu orden</h2>
+            <div class="p-3 p-lg-5 border bg-white">
+              <table class="table site-block-order-table mb-5">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for o in ordenes %}
+                    <tr>
+                      <td>{{ o.producto.nombre }} <strong class="mx-2">x</strong> {{ o.cantidad }}</td>
+                      <td>${{ o.precio }}</td>
+                    </tr>
+                  {% endfor %}
+                  <tr>
+                    <td class="text-black font-weight-bold">
+                      <strong>Total</strong>
+                    </td>
+                    <td class="text-black font-weight-bold">
+                      <strong>${{ orden.total }}</strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="border p-3 mb-3">
+                <h3 class="h6 mb-0">
+                  <a
+                    class="d-block"
+                    data-bs-toggle="collapse"
+                    href="https://portales.bancochile.cl/personas"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="collapsecheque"
+                    >Transferencia</a
+                  >
+                </h3>
+                <div class="collapse" id="collapsecheque">
+                  <div class="py-2">
+                    <p class="mb-0"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border p-3 mb-5">
+                <h3 class="h6 mb-0">
+                  <a
+                    class="d-block"
+                    data-bs-toggle="collapse"
+                    href="https://www.paypal.com/cl/home"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="collapsepaypal"
+                    >Paypal</a
+                  >
+                </h3>
+                <div class="collapse" id="collapsepaypal">
+                  <div class="py-2"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <form method="POST" action="{% url 'thankyou' %}">
+                  {% csrf_token %}
+                  <!-- Aquí van los campos del formulario -->
+                  <input type="hidden" id="orden" name="orden" value="{{ orden.id }}"/>
+                  <button class="btn btn-black btn-lg py-3 btn-block" type="submit">Pagar</button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
-<!-- End Main Section -->
 
-<!-- Script para cargar comunas dinámicamente -->
 <script>
-    const comunasPorRegion = {{ COMUNAS_POR_REGION|safe }};
+  
+  const comunasPorRegion = {{ COMUNAS_POR_REGION|safe }};
 
-    function cargarComunas() {
-        const regionSelect = document.getElementById("nueva_region");
-        const ciudadSelect = document.getElementById("nueva_ciudad");
-        const selectedRegion = regionSelect.value;
+  function cargarComunas() {
+    const regionSelect = document.getElementById("nueva_region");
+    const ciudadSelect = document.getElementById("nueva_ciudad");
+    const selectedRegion = regionSelect.value;
 
-        // Vaciar las opciones de ciudad
-        ciudadSelect.innerHTML = '<option value="">Selecciona una ciudad</option>';
+    // Vaciar las opciones de ciudad
+    ciudadSelect.innerHTML = '<option value="">Selecciona una ciudad</option>';
 
-        // Agregar las comunas correspondientes a la región seleccionada
-        if (selectedRegion in comunasPorRegion) {
-            const comunas = comunasPorRegion[selectedRegion];
-            Object.keys(comunas).forEach(key => {
-                const option = document.createElement("option");
-                option.value = key;
-                option.text = comunas[key];
-                ciudadSelect.appendChild(option);
-            });
-        }
+    // Agregar las comunas correspondientes a la región seleccionada
+    if (selectedRegion in comunasPorRegion) {
+      const comunas = comunasPorRegion[selectedRegion];
+      Object.keys(comunas).forEach(key => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.text = comunas[key];
+        ciudadSelect.appendChild(option);
+      });
     }
+  }
 </script>
-
-<!-- Scripts de Bootstrap y personalizados -->
-<script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/tiny-slider.js"></script>
-<script src="js/custom.js"></script>
-
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/tiny-slider.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
 {% endblock contenido %}
