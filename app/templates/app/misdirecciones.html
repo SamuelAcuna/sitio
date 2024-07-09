@@ -30,6 +30,53 @@
       <div class="card shadow-sm border-0 rounded-3">
         <div class="card-body">
           <h1 class="card-title">Mis direcciones</h1>
+          <div class="col-md-6">
+            <form method="post" action="{% url "misdirecciones" %}">
+              {% csrf_token %}
+              
+    
+              <!-- Collapse para agregar nueva dirección -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h5 class="h6 mb-0">
+                    <a class="d-block" data-bs-toggle="collapse" href="#collapseNuevaDireccion" role="button" aria-expanded="false" aria-controls="collapseNuevaDireccion">
+                      <i class="bi bi-plus-circle me-2"></i> Agregar nueva dirección
+                    </a>
+                  </h5>
+                </div>
+                <div class="collapse" id="collapseNuevaDireccion">
+                  <div class="card-body">
+                    <!-- Formulario para nueva dirección -->
+                    <div class="form-group mb-3">
+                      <label for="nueva_direccion" class="form-label">Dirección:</label>
+                      <input type="text" class="form-control" id="nueva_direccion" name="nueva_direccion">
+                    </div>
+                    <div class="form-group mb-3">
+                      <label for="nueva_region" class="form-label">Región:</label>
+                      <select class="form-control" id="nueva_region" name="nueva_region" onchange="cargarComunas()" required>
+                        <option value="">Selecciona una región</option>
+                        {% for key, value in REGIONES_CHILE %}
+                          <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group mb-3">
+                      <label for="nueva_ciudad" class="form-label">Ciudad:</label>
+                      <select class="form-control" id="nueva_ciudad" name="nueva_ciudad" required>
+                        <option value="">Selecciona una ciudad</option>
+                      </select>
+                    </div>
+                    <div class="form-group mb-3">
+                      <label for="nuevo_codigo_postal" class="form-label">Código Postal:</label>
+                      <input type="text" class="form-control" id="nuevo_codigo_postal" name="nuevo_codigo_postal">
+                    </div>
+                    <input type="hidden" name="accion" value="agregar"/>
+                    <button type="submit" class="btn btn-primary">Agregar dirección</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
           <table class="table table-striped table-hover">
             <thead>             
               <tr>
@@ -37,6 +84,7 @@
                 <th>Region</th>
                 <th>Ciudad</th>
                 <th>Tipo</th>
+                <th>Gestion</th>
               </tr>
             </thead>
             <tfoot>
@@ -44,7 +92,7 @@
                 <th>Direccion</th>
                 <th>Region</th>
                 <th>Ciudad</th>
-                <th>Tipo</th>
+                <th>Gestion</th>
               </tr>
             </tfoot>
             <tbody>
@@ -55,7 +103,15 @@
                 <td>{{ o.get_ciudad_display}}</td>
                 <td>{{ o.tipo }}</td>
                 <td>
-                  <a href="#" role="button" class="btn btn-info text-light shadow rounded">Ver detalle</a>
+                  <div class="d-flex">
+                    <a href="#" role="button" class="btn btn-info btn-sm text-light shadow rounded d-inline-block me-2">Modificar direccion</a>
+                    <form method="POST" action="{% url 'misdirecciones' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="accion" value="eliminar"/>
+                      <input type="hidden" name="direccionid" value="{{o.id}}"/>
+                      <button class="btn btn-black btn-sm d-inline-block" type="submit">X</button>
+                    </form>
+                  </div>
                 </td>
               </tr>
               {% endfor %}
@@ -66,4 +122,28 @@
     </div>
   </div>
 </div>
+<script>
+  
+  const comunasPorRegion = {{ COMUNAS_POR_REGION|safe }};
+
+  function cargarComunas() {
+    const regionSelect = document.getElementById("nueva_region");
+    const ciudadSelect = document.getElementById("nueva_ciudad");
+    const selectedRegion = regionSelect.value;
+
+    // Vaciar las opciones de ciudad
+    ciudadSelect.innerHTML = '<option value="">Selecciona una ciudad</option>';
+
+    // Agregar las comunas correspondientes a la región seleccionada
+    if (selectedRegion in comunasPorRegion) {
+      const comunas = comunasPorRegion[selectedRegion];
+      Object.keys(comunas).forEach(key => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.text = comunas[key];
+        ciudadSelect.appendChild(option);
+      });
+    }
+  }
+</script>
 {% endblock contenido %}

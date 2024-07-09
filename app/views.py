@@ -9,7 +9,26 @@ from django.contrib.auth.decorators import login_required
 from .services import OrderService
 from django.http import Http404
 
+def modificarorden(request,id):
+    orden=get_object_or_404(Orden, id=id)
+    form = UpdateOrdenForm(instance=orden)  # Pasar la instancia del producto al formulario
+
+    if request.method == "POST":
+        form = UpdateOrdenForm(data=request.POST, files=request.FILES, instance=orden)  # Usar la instancia del producto
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Orden Modificada')
+            return redirect('tabla_ordenes')  
+
+   
     
+    items = OrdenItem.objects.filter(orden=orden)
+    datos={
+         "orden":orden,
+         'items':items,
+         "forms": form,
+     }
+    return render(request, 'dash/modificarorden.html',datos)
     
 def detalleorden(request,id):
     orden=get_object_or_404(Orden, id=id)
@@ -32,10 +51,46 @@ def misordenes(request):
 
 def misdirecciones(request):
     cliente = Cliente.objects.get(user=request.user)
-    direcciones = Direccion.objects.filter(cliente=cliente)
-    datos={
-        'cliente':cliente,
-        'direcciones':direcciones
+    direcciones = Direccion.objects.filter(cliente=cliente, eliminado=False)
+    
+    if request.method == "POST":
+        accion = request.POST.get("accion")
+        direccion_id = request.POST.get("direccionid")
+        nueva_direccion = request.POST.get("nueva_direccion")
+        nueva_region = request.POST.get("nueva_region")
+        nueva_ciudad = request.POST.get("nueva_ciudad")
+        nuevo_codigo_postal = request.POST.get("nuevo_codigo_postal")
+
+        if accion == 'eliminar':
+            try:
+                direccion = get_object_or_404(Direccion, id=direccion_id)
+                direccion.eliminado = True
+                direccion.save()
+                messages.success(request, 'La dirección ha sido eliminada correctamente.')
+            except (KeyError, Direccion.DoesNotExist):
+                messages.error(request, 'Error al eliminar la dirección.')
+            return redirect("misdirecciones")
+        
+        elif accion == 'agregar':
+            if nueva_direccion and nueva_region and nueva_ciudad and nuevo_codigo_postal:
+                Direccion.objects.create(
+                    cliente=cliente,
+                    direccion=nueva_direccion,
+                    region=nueva_region,
+                    ciudad=nueva_ciudad,
+                    codigo_postal=nuevo_codigo_postal,
+                    tipo='envio'
+                )
+                messages.success(request, 'La nueva dirección ha sido agregada correctamente.')
+            else:
+                messages.error(request, 'Por favor, complete todos los campos para agregar una nueva dirección.')
+            return redirect('misdirecciones')
+    
+    datos = {
+        'cliente': cliente,
+        'direcciones': direcciones,
+        'REGIONES_CHILE': REGIONES_CHILE,
+        'COMUNAS_POR_REGION': COMUNAS_POR_REGION,
     }
     return render(request, 'app/misdirecciones.html', datos)
 
@@ -227,7 +282,7 @@ def producto(request,id):
     return render(request, 'app/producto.html', datos)
 
 def shop(request):
-    productos=Producto.objects.all()
+    productos=Producto.objects.filter(eliminado = False)
     
     datos={
         
@@ -291,26 +346,49 @@ def tabla_clientes(request):
     return render(request, 'dash/tabla_clientes.html', datos)
 
 def tabla_ordenes(request):
-    ordenes=Orden.objects.all()
+    ordenes=Orden.objects.filter(eliminado = False)
+    if request.method == "POST":
+        orden = request.POST.get("ordenid")
+        try:
+            orden = get_object_or_404(Orden, id=orden)
+            orden.eliminado = True
+            orden.save()
+            messages.success(request, 'La orden ha sido eliminado correctamente.')
+        except:
+            messages.error(request, 'Error al eliminar la orden.')
     datos={
         "ordenes":ordenes
     }
     return render(request, 'dash/tabla_ordenes.html',datos)
 
+
 def tabla_producto(request):
-    if request.method == 'POST':
-        producto_id = request.POST.get('producto_id')
-        cantidad = request.POST.get('cantidad')
+    if request.method == "POST":
+        accion = request.POST.get("accion")
+        producto_id = request.POST.get("producto_id")
 
-        producto = Producto.objects.get(id=producto_id)
-        producto.stock += int(cantidad)
-        producto.save()
+        if accion == "eliminar":
+            try:
+                producto = get_object_or_404(Producto, id=producto_id)
+                producto.eliminado = True
+                producto.save()
+                messages.success(request, 'El producto ha sido eliminado correctamente.')
+            except Producto.DoesNotExist:
+                messages.error(request, 'El producto no existe o ya ha sido eliminado.')
+            except Exception as e:
+                messages.error(request, f'Error al eliminar el producto: {str(e)}')
 
-        messages.success(request, f'Se ha añadido {cantidad} al producto {producto.nombre}')
+        elif accion == "agregar_stock":
+            cantidad = int(request.POST.get("cantidad", 0))
+            if cantidad <= 0:
+                messages.error(request, 'La cantidad debe ser mayor que cero para agregar stock.')
+            else:
+                producto = get_object_or_404(Producto, id=producto_id)
+                producto.stock += cantidad
+                producto.save()
+                messages.success(request, f'Se agregaron {cantidad} unidades al stock correctamente.')
 
-        return redirect('tabla_producto')
-
-    productos = Producto.objects.all()
+    productos = Producto.objects.filter(eliminado=False)
     datos = {
         "productos": productos
     }

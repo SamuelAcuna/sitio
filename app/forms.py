@@ -9,7 +9,11 @@ class UpdateClienteForm(forms.ModelForm):
         model = Cliente
         fields = ['nombre','apellidos', 'telefono']
 
+class UpdateOrdenForm(forms.ModelForm):
 
+    class Meta:
+        model = Orden
+        fields = '__all__'
 class OrdenForm(forms.ModelForm):
 
     class Meta:

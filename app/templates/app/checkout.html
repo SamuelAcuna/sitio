@@ -21,7 +21,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6">
-        <form method="post" action="">
+        <form method="post" action="{% url "checkout" %}">
           {% csrf_token %}
           <div class="form-group">
             <label for="direccion" class="form-label">Seleccione Dirección:</label>
@@ -31,14 +31,14 @@
               </div>
               <div class="card-body">
                 <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" id="retiro_tienda" name="direccion" value="" required>
+                  <input class="form-check-input" type="radio" id="retiro_tienda" name="direccion" value="" >
                   <label class="form-check-label" for="retiro_tienda">
                     Retiro en tienda
                   </label>
                 </div>
                 {% for direccion in direcciones %}
                   <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" id="direccion{{ direccion.id }}" name="direccion" value="{{ direccion.id }}" required>
+                    <input class="form-check-input" type="radio" id="direccion{{ direccion.id }}" name="direccion" value="{{ direccion.id }}" >
                     <label class="form-check-label" for="direccion{{ direccion.id }}">
                       {{ direccion.direccion }}, {{ direccion.get_ciudad_display }}, {{ direccion.get_region_display }}
                     </label>

@@ -55,7 +55,9 @@
                 <button type="button" class="btn btn-primary text-light shadow rounded" data-bs-toggle="modal" data-bs-target="#agregarStockModal{{ p.id }}">
                   Agregar stock
                 </button>
-                <a href="#" class="btn btn-danger text-light shadow rounded">Eliminar</a>
+                <button type="button" class="btn btn-danger text-light shadow rounded" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ p.id }}">
+                  Eliminar
+                </button>
               </td>
             </tr>
             <!-- Modal para agregar stock -->
@@ -71,10 +73,32 @@
                       {% csrf_token %}
                       <input type="hidden" name="producto_id" value="{{ p.id }}">
                       <div class="mb-3">
+                        <input type="hidden" name="accion" value="agregar_stock">
                         <label for="cantidad{{ p.id }}" class="form-label">Cantidad a agregar:</label>
                         <input type="number" class="form-control" id="cantidad{{ p.id }}" name="cantidad" required>
                       </div>
                       <button type="submit" class="btn btn-primary">Agregar</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal para confirmación de eliminación -->
+            <div class="modal fade" id="confirmDeleteModal{{ p.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ p.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel{{ p.id }}">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar este producto?</p>
+                    <form method="POST" action="{% url 'tabla_producto' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="accion" value="eliminar">
+                      <input type="hidden" name="producto_id" value="{{ p.id }}">
+                      <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
                     </form>
                   </div>
                 </div>
@@ -87,5 +111,4 @@
     </div>
   </div>
 </main>
-
 {% endblock contents %}

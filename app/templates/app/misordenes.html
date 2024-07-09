@@ -36,6 +36,7 @@
                 <th>Orden</th>
                 <th>Fecha de Pedido</th>
                 <th>Cliente</th>
+                <th>Estado</th>
                 <th>Total</th>
                 <th>Gestión</th>
               </tr>
@@ -45,6 +46,7 @@
                 <th>Orden</th>
                 <th>Fecha de Pedido</th>
                 <th>Cliente</th>
+                <th>Estado</th>
                 <th>Total</th>
                 <th>Gestión</th>
               </tr>
@@ -55,6 +57,7 @@
                 <td>{{ o.id }}</td>
                 <td>{{ o.fecha_creacion }}</td>
                 <td>{{ o.cliente.nombre }} {{ o.cliente.apellidos }}</td>
+                <td>{{ o.estado }}</td>
                 <td>{{ o.total }}</td>
                 <td>
                   <a href="{% url "detalleorden" o.id %}" role="button" class="btn btn-info text-light shadow rounded">Ver detalle</a>
