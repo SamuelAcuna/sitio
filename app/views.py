@@ -8,7 +8,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from .services import OrderService
 from django.http import Http404
-
+from django.shortcuts import render
+from .models import Producto, Categoria
 
 def detalleorden(request,id):
     orden=get_object_or_404(Orden, id=id)
@@ -358,3 +359,7 @@ def modificar_cliente(request):
 def agrega(request):
     return render(request, 'dash/agrega.html')
 
+def lista_productos(request):
+    productos = Producto.objects.all()
+    categorias = Categoria.objects.values_list('nombre', flat=True).distinct()
+    return render(request, 'tabla_producto', {'productos': productos, 'categorias': categorias})
