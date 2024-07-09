@@ -168,15 +168,16 @@
     var productos = document.getElementsByClassName('product-row');
     var subtotal = 0;
     Array.prototype.forEach.call(productos, function (producto) {
-      var precio = parseFloat(producto.querySelector('.product-price').textContent.replace('$', ''));
+      var precio = parseFloat(producto.querySelector('.product-price').textContent.replace('$', '').replace(/\./g, '').replace(',', '.'));
       var cantidad = parseInt(producto.querySelector('.quantity-amount').value);
       var total = precio * cantidad;
-      producto.querySelector('.product-total').textContent = '$' + total.toFixed(2);
+      producto.querySelector('.product-total').textContent = '$' + total.toLocaleString('es-CL');
+
       subtotal += total;
     });
-    document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
-    document.getElementById('total').textContent = '$' + subtotal.toFixed(2);
-    document.getElementById('total-input').value = subtotal.toFixed(2);
+    document.getElementById('subtotal').textContent = '$' + subtotal.toLocaleString('es-CL');
+    document.getElementById('total').textContent = '$' + subtotal.toLocaleString('es-CL');
+    document.getElementById('total-input').value = subtotal.toLocaleString('es-CL');
   }
 </script>
 {% endblock %}

@@ -137,6 +137,18 @@ def cart(request):
                 if cantidad > producto.stock:
                     cantidad = producto.stock  # Asignar la cantidad máxima de stock disponible
                     messages.warning(request, f'La cantidad solicitada excede el stock disponible. Se ha ajustado a {producto.stock}.')
+                    producto = Producto.objects.get(id=product_id)
+                    precio_item = producto.precio * cantidad
+                    
+                    # Obtener o crear el OrdenItem y actualizarlo
+                    ordenitem = OrdenItem.objects.get(id=ordenitem_id)
+                    ordenitem.cantidad = cantidad
+                    ordenitem.precio = precio_item
+                    ordenitem.save()
+                    
+                    
+                    return redirect("cart")
+                    
                 
                 
                 # Obtener el producto y calcular el precio del item
@@ -221,13 +233,14 @@ def checkout(request):
     cliente = Cliente.objects.get(user=request.user)
     orden_incompleta = Orden.objects.filter(cliente=cliente, completada=False).first()
     direcciones = Direccion.objects.filter(cliente=cliente)
+    
     if not orden_incompleta:
         messages.error(request, "No hay una orden incompleta.")
-        return redirect('shop') 
+        return redirect('shop')
     
     orden_incompleta.calcular_total()
     orden_incompleta.save()
-    ordenes=OrdenItem.objects.filter(orden=orden_incompleta)
+    ordenes = OrdenItem.objects.filter(orden=orden_incompleta)
     
     if request.method == "POST":
         direccion_id = request.POST.get("direccion")
@@ -236,9 +249,14 @@ def checkout(request):
         nueva_ciudad = request.POST.get("nueva_ciudad")
         nuevo_codigo_postal = request.POST.get("nuevo_codigo_postal")
         
+        if direccion_id:
+            direccion = Direccion.objects.get(id=direccion_id)
+            orden_incompleta.direccion_envio = direccion  # Asigna la dirección seleccionada a la orden incompleta
+            orden_incompleta.save()
+            return redirect('checkout')
         
         if nueva_direccion and nueva_region and nueva_ciudad and nuevo_codigo_postal:
-            # Guardar la nueva dirección en la base de datos
+            # Guarda la nueva dirección en la base de datos
             direccion = Direccion.objects.create(
                 cliente=cliente,
                 direccion=nueva_direccion,
@@ -247,24 +265,22 @@ def checkout(request):
                 codigo_postal=nuevo_codigo_postal,
                 tipo='envio'
             )
-            # Redirigir de vuelta a la página de checkout después de guardar
+            orden_incompleta.direccion_envio = direccion  # Asigna la nueva dirección a la orden incompleta
+            orden_incompleta.save()
             return redirect('checkout')
-        elif direccion_id:
-            direccion = Direccion.objects.get(id=direccion_id)
         else:
-            direccion = None
+            messages.error(request, "Por favor completa todos los campos para la nueva dirección.")
     
-    datos={
-        'cliente':cliente,
-        'orden':orden_incompleta,
-        'ordenes':ordenes,
+    datos = {
+        'cliente': cliente,
+        'orden': orden_incompleta,
+        'ordenes': ordenes,
         'direcciones': direcciones,
         'REGIONES_CHILE': REGIONES_CHILE,
         'COMUNAS_POR_REGION': COMUNAS_POR_REGION,
-        
     }
-    return render(request, 'app/checkout.html',datos)
-
+    
+    return render(request, 'app/checkout.html', datos)
 def cliente(request):
     return render(request, 'app/cliente.html')
 
@@ -292,24 +308,38 @@ def shop(request):
 
 def thankyou(request):
     if request.method == 'POST':
-        orden_id = request.POST['orden']
+        orden_id = request.POST.get('orden')
+        direccion_id = request.POST.get('direccion_seleccionada')  # Asegúrate de que el nombre coincida con el campo del formulario
         
         try:
             orden = Orden.objects.get(id=orden_id)
-   
             
-
-            orden.save()
+            # Si se proporcionó una dirección ID, asigna la dirección a la orden
+            if not direccion_id:
+                messages.error(request, "Debe seleccionar una dirección de envío.")
+                return redirect('checkout')
+            if direccion_id:
+                direccion = Direccion.objects.get(id=direccion_id)
+                orden.direccion_envio = direccion
+                orden.save()
             
+            # Completa la orden utilizando tu servicio
             order_service = OrderService(orden_id)
             order_service.complete_order()
             
             datos = {'orden': orden}
             
+            # Renderiza la página de agradecimiento con los datos de la orden
             return render(request, 'app/thankyou.html', datos)
         
-        except (Orden.DoesNotExist):
+        except Orden.DoesNotExist:
             raise Http404("La orden o la dirección no existe.")
+        except Direccion.DoesNotExist:
+            raise Http404("La dirección seleccionada no existe.")
+        except Exception as e:
+            # Maneja otros posibles errores aquí
+            messages.error(request, f"Error al procesar la orden: {str(e)}")
+            return redirect('shop') 
 
 def dash(request):
     return render(request, 'dash/index.html')

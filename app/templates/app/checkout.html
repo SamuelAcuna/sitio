@@ -21,11 +21,10 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6">
-<<<<<<< HEAD
-        <form method="post" action="">
-=======
+
+
         <form method="post" action="{% url "checkout" %}">
->>>>>>> samuel
+
           {% csrf_token %}
           <div class="form-group">
             <label for="direccion" class="form-label">Seleccione Dirección:</label>
@@ -35,22 +34,20 @@
               </div>
               <div class="card-body">
                 <div class="form-check mb-2">
-<<<<<<< HEAD
-                  <input class="form-check-input" type="radio" id="retiro_tienda" name="direccion" value="" required>
-=======
-                  <input class="form-check-input" type="radio" id="retiro_tienda" name="direccion" value="" >
->>>>>>> samuel
+
+
+                  <input class="form-check-input" type="radio" id="retiro_tienda" name="direccion" value="3" >
+
                   <label class="form-check-label" for="retiro_tienda">
                     Retiro en tienda
                   </label>
                 </div>
                 {% for direccion in direcciones %}
                   <div class="form-check mb-2">
-<<<<<<< HEAD
-                    <input class="form-check-input" type="radio" id="direccion{{ direccion.id }}" name="direccion" value="{{ direccion.id }}" required>
-=======
+
+
                     <input class="form-check-input" type="radio" id="direccion{{ direccion.id }}" name="direccion" value="{{ direccion.id }}" >
->>>>>>> samuel
+
                     <label class="form-check-label" for="direccion{{ direccion.id }}">
                       {{ direccion.direccion }}, {{ direccion.get_ciudad_display }}, {{ direccion.get_region_display }}
                     </label>
@@ -171,10 +168,12 @@
               <div class="form-group">
                 <form method="POST" action="{% url 'thankyou' %}">
                   {% csrf_token %}
-                  <!-- Aquí van los campos del formulario -->
-                  <input type="hidden" id="orden" name="orden" value="{{ orden.id }}"/>
+                  <!-- Campo oculto para almacenar la dirección seleccionada -->
+                  <input type="hidden" id="direccion_seleccionada" name="direccion_seleccionada" value="">
+                  <!-- Otros campos del formulario (si los hay) -->
+                  <input type="hidden" id="orden" name="orden" value="{{ orden.id }}">
                   <button class="btn btn-black btn-lg py-3 btn-block" type="submit">Pagar</button>
-                </form>
+              </form>
               </div>
             </div>
           </div>
@@ -185,6 +184,12 @@
 </div>
 
 <script>
+  const radiosDireccion = document.querySelectorAll('input[name="direccion"]');
+  radiosDireccion.forEach(radio => {
+      radio.addEventListener('change', function() {
+          document.getElementById('direccion_seleccionada').value = this.value;
+      });
+  });
   
   const comunasPorRegion = {{ COMUNAS_POR_REGION|safe }};
 
