@@ -52,7 +52,12 @@ class Direccion(models.Model):
     tipo = models.CharField(max_length=50)  # 'envio' o 'facturacion'
 
     def __str__(self):
-        return f"{self.direccion}, {self.ciudad}, {self.estado}, {self.pais}"
+        return f"{self.direccion}, {self.ciudad}, {self.region}"
+    def get_region_display(self):
+        return dict(REGIONES_CHILE).get(self.region, self.region)
+
+    def get_ciudad_display(self):
+        return dict(COMUNAS_POR_REGION.get(self.region, [])).get(self.ciudad, self.ciudad)
 
 class Orden(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True)

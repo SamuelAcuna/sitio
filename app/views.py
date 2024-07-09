@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from .services import OrderService
+from django.http import Http404
 
 
 def detalleorden(request,id):
@@ -237,13 +238,22 @@ def thankyou(request):
     if request.method == 'POST':
         orden_id = request.POST['orden']
         
-        order_service = OrderService(orden_id)
-        order_service.complete_order()
+        try:
+            orden = Orden.objects.get(id=orden_id)
+   
+            
 
-        orden = order_service.orden  # Obtener la orden desde el servicio
-        datos = {'orden': orden}
-
-        return render(request, 'app/thankyou.html', datos)
+            orden.save()
+            
+            order_service = OrderService(orden_id)
+            order_service.complete_order()
+            
+            datos = {'orden': orden}
+            
+            return render(request, 'app/thankyou.html', datos)
+        
+        except (Orden.DoesNotExist):
+            raise Http404("La orden o la dirección no existe.")
 
 def dash(request):
     return render(request, 'dash/index.html')
