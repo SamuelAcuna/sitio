@@ -9,7 +9,7 @@
         <div class="col-lg-5">
           <div class="intro-excerpt">
             <h1>Acerca de nosotros</h1>
-            <p class="mb-4">Nos encargamos de mantenerte al tanto de todo acto que tu mascota hace cuado tu no te encuentras en casa.</p>
+            <p class="mb-4">Nos encargamos de mantenerte al tanto de todo acto que tu mascota hace cuando tú no te encuentras en casa.</p>
             <p><a href="{% url 'shop' %}" class="btn btn-secondary me-2">Comprar Ahora</a><a href="{% url 'shop' %}" class="btn btn-white-outline">Explorar</a></p>
           </div>
         </div>
@@ -82,4 +82,59 @@
     </div>
   </div>
   <!-- End Why Choose Us Section -->
-{% endblock contenido%}
+
+  <!-- Start Contact Form Section -->
+  <div class="contact-form-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <h2 class="section-title text-center mb-5">Contáctanos</h2>
+          <form id="contactForm" method="POST" action="{% url 'ruta_de_tu_vista_de_contacto' %}" onsubmit="return validateForm()">
+            {% csrf_token %} <!-- Protección contra CSRF -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="fname">Primer Nombre</label>
+                  <input type="text" class="form-control" id="fname" name="fname" required> <!-- Campo para el primer nombre, requerido -->
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="lname">Apellido</label>
+                  <input type="text" class="form-control" id="lname" name="lname" required> <!-- Campo para el apellido, requerido -->
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input type="email" class="form-control" id="email" name="email" required> <!-- Campo para el correo electrónico, requerido -->
+            </div>
+            <div class="form-group">
+              <label for="message">Mensaje</label>
+              <textarea name="message" class="form-control" id="message" cols="30" rows="5" required></textarea> <!-- Campo para el mensaje, requerido -->
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar Mensaje</button> <!-- Botón para enviar el formulario -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Contact Form Section -->
+
+  <script>
+    function validateForm() {
+      var fname = document.getElementById('fname').value;
+      var lname = document.getElementById('lname').value;
+      var email = document.getElementById('email').value;
+      var message = document.getElementById('message').value;
+
+      if (fname == '' || lname == '' || email == '' || message == '') {
+        alert('Por favor completa todos los campos.');
+        return false;
+      }
+
+      return true;
+    }
+  </script>
+
+{% endblock contenido %}
