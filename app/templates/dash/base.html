@@ -86,14 +86,14 @@
     </div>
     <div id="layoutSidenav_content">
 
-      {% if user.is_authenticated %}
+      {%  if user.is_staff %}
       {% block contents %}
 
       {% endblock contents %}
       {% else %}
           <div class="container mt-5">
             <div class="card text-center p-3">
-                <h2>Por favor inicie sesion</h2>
+                <h2>Seccion solo habilitada para los administradores, inicie sesion como administrador</h2>
                 <a class="nav-link px-5 text-light btn bg-dark" href="{% url 'login' %}"
                 ><strong>Inicio de Sesión</strong></a
               >
