@@ -8,6 +8,11 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from .services import OrderService
 from django.http import Http404
+import requests
+from django.http import JsonResponse
+
+
+
 
 def modificarorden(request,id):
     orden=get_object_or_404(Orden, id=id)
@@ -341,8 +346,59 @@ def thankyou(request):
             messages.error(request, f"Error al procesar la orden: {str(e)}")
             return redirect('shop') 
 
+
+def get_local_time_view(request):
+    local_time = get_local_time()  # Obtener la hora local
+    data = {'local_time': local_time}
+    return JsonResponse(data)
+
+def get_local_time():
+    url = 'http://worldtimeapi.org/api/ip/'
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Lanza una excepción para errores HTTP
+        
+        data = response.json()
+        return data['datetime']  # Devuelve la hora local en formato ISO8601
+    except requests.exceptions.RequestException as e:
+        print(f'Error al obtener la hora local: {e}')
+        return None
+
+API_KEY = 'edfdc909456a8af1bb840533'
+
+def get_exchange_rate(base_currency, target_currency):
+    url = f'https://v6.exchangerate-api.com/v6/{API_KEY}/latest/{base_currency}'
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Lanza una excepción para errores HTTP
+        data = response.json()
+        if 'conversion_rates' in data and target_currency in data['conversion_rates']:
+            return data['conversion_rates'][target_currency]
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f'Error en la solicitud a la API de tipo de cambio: {e}')
+        return None
+def get_random_joke():
+    url = 'https://official-joke-api.appspot.com/random_joke'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    return None
 def dash(request):
-    return render(request, 'dash/index.html')
+    clp_to_usd_rate = get_exchange_rate('USD', 'CLP')
+    clp_to_eur_rate = get_exchange_rate('EUR', 'CLP')
+    random_joke = get_random_joke()
+    ordenes=Orden.objects.filter(eliminado = False)
+    context = {
+        'clp_to_usd_rate': clp_to_usd_rate,
+        'clp_to_eur_rate':clp_to_eur_rate,
+        'random_joke': random_joke,
+        'local_time': get_local_time(),
+        "ordenes":ordenes
+    }
+    return render(request, 'dash/index.html', context)
 
 def register(request):
     if request.method == 'POST':
@@ -492,6 +548,5 @@ def formulario_cliente(request):
 def modificar_cliente(request):
     return render(request, 'dash/modificar_cliente.html')
 
-def agrega(request):
-    return render(request, 'dash/agrega.html')
+
 

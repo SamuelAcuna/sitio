@@ -128,42 +128,36 @@
                   </tr>
                 </tbody>
               </table>
-
-              <div class="border p-3 mb-3">
-                <h3 class="h6 mb-0">
-                  <a
-                    class="d-block"
-                    data-bs-toggle="collapse"
-                    href="https://portales.bancochile.cl/personas"
-                    role="button"
-                    aria-expanded="false"
-                    aria-controls="collapsecheque"
-                    >Transferencia</a
-                  >
-                </h3>
-                <div class="collapse" id="collapsecheque">
-                  <div class="py-2">
-                    <p class="mb-0"></p>
-                  </div>
-                </div>
+              
+             <!-- Métodos de Pago -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <h5 class="h6 mb-0">Métodos de Pago</h5>
+            </div>
+            <div class="card-body">
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" id="transferencia" name="metodo_pago" value="transferencia">
+                <label class="form-check-label" for="transferencia">
+                  Transferencia Bancaria
+                </label>
               </div>
-
-              <div class="border p-3 mb-5">
-                <h3 class="h6 mb-0">
-                  <a
-                    class="d-block"
-                    data-bs-toggle="collapse"
-                    href="https://www.paypal.com/cl/home"
-                    role="button"
-                    aria-expanded="false"
-                    aria-controls="collapsepaypal"
-                    >Paypal</a
-                  >
-                </h3>
-                <div class="collapse" id="collapsepaypal">
-                  <div class="py-2"></div>
-                </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" id="paypal" name="metodo_pago" value="paypal">
+                <label class="form-check-label" for="paypal">
+                  Paypal
+                </label>
               </div>
+              
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" id="tarjeta" name="metodo_pago" value="tarjeta" data-bs-toggle="collapse" data-bs-target="#collapseTarjeta">
+                  <label class="form-check-label" for="tarjeta">
+                    Tarjeta de Débito/Crédito
+                  </label>
+                </div>
+                
+              
+            </div>
+          </div>
 
               <div class="form-group">
                 <form method="POST" action="{% url 'thankyou' %}">
@@ -172,7 +166,7 @@
                   <input type="hidden" id="direccion_seleccionada" name="direccion_seleccionada" value="">
                   <!-- Otros campos del formulario (si los hay) -->
                   <input type="hidden" id="orden" name="orden" value="{{ orden.id }}">
-                  <button class="btn btn-black btn-lg py-3 btn-block" type="submit">Pagar</button>
+                  <button class="btn btn-black btn-lg py-3 btn-block" onclick="validarMetodoPago()" type="submit">Pagar</button>
               </form>
               </div>
             </div>
@@ -184,6 +178,7 @@
 </div>
 
 <script>
+  
   const radiosDireccion = document.querySelectorAll('input[name="direccion"]');
   radiosDireccion.forEach(radio => {
       radio.addEventListener('change', function() {
@@ -212,6 +207,30 @@
       });
     }
   }
+  const tarjetaRadio = document.getElementById('tarjeta');
+  const collapseTarjeta = new bootstrap.Collapse(document.getElementById('collapseTarjeta'));
+
+  
+  
+  function validarMetodoPago() {
+    const radiosMetodoPago = document.querySelectorAll('input[name="metodo_pago"]');
+    let metodoSeleccionado = false;
+
+    radiosMetodoPago.forEach(radio => {
+        if (radio.checked) {
+            metodoSeleccionado = true;
+        }
+    });
+
+    if (!metodoSeleccionado) {
+       
+        alert('Debe seleccionar un método de pago antes de proceder.');
+        return false; // Evitar que se envíe el formulario
+    }
+
+    // Si se seleccionó un método de pago, se puede proceder con el envío del formulario
+    return true;
+}
 </script>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/tiny-slider.js' %}"></script>

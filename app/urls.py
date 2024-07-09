@@ -7,6 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('get_local_time/', get_local_time_view, name='get_local_time'),
     path('modificarorden/<id>', modificarorden, name='modificarorden'),
     path('detalleorden/<id>', detalleorden, name='detalleorden'),
     path('misordenes/', misordenes, name='misordenes'),
@@ -34,7 +35,7 @@ urlpatterns = [
     path('dash/modificar_producto/<id>', modificar_producto, name='modificar_producto'),
     path('dash/formulario_cliente/', formulario_cliente, name='formulario_cliente'),
     path('dash/modificar_cliente/', modificar_cliente, name='modificar_cliente'),
-    path('dash/agrega/', agrega, name='agrega'),
+    
 
 ]
 
