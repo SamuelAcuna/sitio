@@ -58,7 +58,7 @@
               <a class="nav-link" href="{% url 'about' %}">¿Quiénes somos?</a>
             </li>
             <li>
-              {% if user.is_authenticated %}
+              {% if user.is_staff %}
               <a class="nav-link" href="{% url 'dash' %}">Admin</a>
               {% endif %}  
             </li>
@@ -71,7 +71,7 @@
             {% if user.is_authenticated %}
             <li class="nav-item"> 
               <a class="nav-link px-5 text-light" href="{% url 'perfil' %}"
-                ><strong>Bienvenido, <strong>{{user.username}}</strong></a
+                ><strong>Bienvenido <strong>{{user.username}}</strong></a
               >
             </li>
             <li>

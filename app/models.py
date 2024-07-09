@@ -36,7 +36,16 @@ class Producto(models.Model):
     stock = models.IntegerField()
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
+    
+    def get_imagen_url(self):
+        if self.imagen and hasattr(self.imagen, 'url'):
+            return self.imagen.url
+        else:
+            # URL de imagen por defecto o placeholder
+            return '/media/productos/defecto.png'  # Reemplaza con la URL deseada
 
+    def __str__(self):
+        return self.nombre
     def get_precio(self):
         return self.precio
 

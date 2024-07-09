@@ -11,7 +11,7 @@
 					<section class="py-5">
 						<div class="container px-4 px-lg-5 my-5">
 							<div class="row gx-4 gx-lg-5 align-items-center">
-								<div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{p.imagen.url}}" alt="..." /></div>
+								<div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{p.get_imagen_url}}" alt="..." /></div>
 								<div class="col-md-6">
 									<div class="small mb-1">{{p.id}}</div>
 									<h1 class="display-5 fw-bolder">{{p.nombre}}</h1>
@@ -32,7 +32,7 @@
 										<input class="form-control text-center me-3" id="cantidad" name="cantidad" type="num" value="1" style="max-width: 3rem" />
 										<!-- Otros campos del formulario -->
 										<br>
-										<button class="btn " type="submit">Enviar</button>
+										<button class="btn " type="submit">Agregar al carrito</button>
 									</form>
 								</div>
 							</div>

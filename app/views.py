@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto, Orden, Cliente, OrdenItem, Direccion
-from .forms import ProductoForm, CrearUsuario, CategoriaForm, OrdenForm,UpdateClienteForm
+from .forms import *
 from .choices import REGIONES_CHILE, COMUNAS_POR_REGION
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 from .services import OrderService
 from django.http import Http404
 
-
+    
+    
 def detalleorden(request,id):
     orden=get_object_or_404(Orden, id=id)
     items = OrdenItem.objects.filter(orden=orden)
@@ -297,11 +298,21 @@ def tabla_ordenes(request):
     return render(request, 'dash/tabla_ordenes.html',datos)
 
 def tabla_producto(request):
-    productos=Producto.objects.all()
-    
-    datos={
-        
-        "productos":productos
+    if request.method == 'POST':
+        producto_id = request.POST.get('producto_id')
+        cantidad = request.POST.get('cantidad')
+
+        producto = Producto.objects.get(id=producto_id)
+        producto.stock += int(cantidad)
+        producto.save()
+
+        messages.success(request, f'Se ha añadido {cantidad} al producto {producto.nombre}')
+
+        return redirect('tabla_producto')
+
+    productos = Producto.objects.all()
+    datos = {
+        "productos": productos
     }
 
     return render(request, 'dash/tabla_producto.html', datos)
@@ -309,12 +320,16 @@ def tabla_producto(request):
 def agregar_producto(request):
     form=ProductoForm()
 
-    if request.method=="POST":
-        form=ProductoForm(data=request.POST, files=request.FILES)
+    if request.method == 'POST':
+        form = ProductoForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect(to="tabla_producto")
+            messages.success(request, 'Producto agregado correctamente.')
+            return redirect('tabla_producto')  
+    else:
+        form = ProductoForm()
 
+   
     datos={
         "form":form
     }
@@ -346,8 +361,22 @@ def agregar_orden(request):
         "form":form
     }
     return render(request, 'dash/agregar_producto.html',datos)
-def modificar_producto(request):
-    return render(request, 'dash/modificar_producto.html')
+def modificar_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+    form = UpdateProductoForm(instance=producto)  # Pasar la instancia del producto al formulario
+
+    if request.method == "POST":
+        form = UpdateProductoForm(data=request.POST, files=request.FILES, instance=producto)  # Usar la instancia del producto
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Producto Modificado')
+            return redirect('tabla_producto')  # Nombre de la URL a la que quieres redirigir después de guardar
+
+    datos = {
+        "producto": producto,
+        "forms": form,  # Corregir el nombre de la variable
+    }
+    return render(request, 'dash/modificar_producto.html', datos)
 
 def formulario_cliente(request):
     return render(request, 'dash/formulario_cliente.html')

@@ -1,9 +1,12 @@
-{% extends "dash/base.html" %} {% load static %} {% block contents %}
+{% extends "dash/base.html" %}
+{% load static %}
+
+{% block contents %}
 <main>
   <div class="container-fluid px-4">
     <h1 class="mt-4">Productos</h1>
     <ol class="breadcrumb mb-4">
-      <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'index' %}">Dashboard</a></li>
       <li class="breadcrumb-item active">Productos</li>
     </ol>
 
@@ -13,59 +16,76 @@
         Lista de productos
       </div>
       <div class="card-body">
-        <a href="{% url "agregar_producto" %}" class="btn btn-primary">
-          Agregar Producto</a
-        >
-       
-        <a href="{% url "agregar_categoria" %}" class="btn btn-primary">
-          Agregar Categoria</a
-        >
+        <a href="{% url 'agregar_producto' %}" class="btn btn-primary">
+          Agregar Producto
+        </a>
+        <a href="{% url 'agregar_categoria' %}" class="btn btn-primary">
+          Agregar Categoría
+        </a>
         <hr />
-        <table id="datatablesSimple">
+        <table id="datatablesSimple" class="table table-striped">
           <thead>
             <tr>
               <th>Sku</th>
               <th>Nombre</th>
-              <th>Categoria</th>
+              <th>Categoría</th>
               <th>Precio</th>
               <th>Inventario</th>
               <th>Estado</th>
-              <th>Gestion</th>
+              <th>Gestión</th>
             </tr>
           </thead>
-          <tfoot>
-            <tr>
-              <th>Sku</th>
-              <th>Nombre</th>
-              <th>Categoria</th>
-              <th>Precio</th>
-              <th>Inventario</th>
-              <th>Estado</th>
-              <th>Gestion</th>
-            </tr>
-          </tfoot>
           <tbody>
             {% for p in productos %}
-            <tr>  <!--   'nombre', 'precio', 'stock', 'categoria'-->
-                <td>{{p.id}}</td>
-                <td>{{p.nombre}}</td>
-                <td>{{p.categoria}}</td>
-                <td>{{p.precio}}</td>
-                <td>{{p.stock}}</td>
-                <td>En Stock</td>
-                <td>
-                    <a href="" role="button" class="btn btn-info text-light shadow rounded">Modificar</a>
-                    <a href="" role="button" class="btn btn-primary text-light shadow rounded">Agregar stock</a>
-                    <a href="" role="button" class="btn btn-danger text-light shadow rounded">Eliminar</a>
-                </td>
+            <tr>
+              <td>{{ p.id }}</td>
+              <td>{{ p.nombre }}</td>
+              <td>{{ p.categoria }}</td>
+              <td>{{ p.precio }}</td>
+              <td>{{ p.stock }}</td>
+              <td>
+                {% if p.stock == 0 %}
+                  <span class="badge bg-danger">Fuera de stock</span>
+                {% else %}
+                  <span class="badge bg-success">En stock</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'modificar_producto' p.id %}" class="btn btn-info text-light shadow rounded">Modificar</a>
+                <button type="button" class="btn btn-primary text-light shadow rounded" data-bs-toggle="modal" data-bs-target="#agregarStockModal{{ p.id }}">
+                  Agregar stock
+                </button>
+                <a href="#" class="btn btn-danger text-light shadow rounded">Eliminar</a>
+              </td>
             </tr>
+            <!-- Modal para agregar stock -->
+            <div class="modal fade" id="agregarStockModal{{ p.id }}" tabindex="-1" aria-labelledby="agregarStockModalLabel{{ p.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="agregarStockModalLabel{{ p.id }}">Agregar Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form method="POST" action="{% url 'tabla_producto' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="producto_id" value="{{ p.id }}">
+                      <div class="mb-3">
+                        <label for="cantidad{{ p.id }}" class="form-label">Cantidad a agregar:</label>
+                        <input type="number" class="form-control" id="cantidad{{ p.id }}" name="cantidad" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Agregar</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
             {% endfor %}
-            
-      
           </tbody>
         </table>
       </div>
     </div>
   </div>
 </main>
+
 {% endblock contents %}
