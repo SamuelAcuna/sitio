@@ -8,8 +8,9 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from .services import OrderService
 from django.http import Http404
-from django.shortcuts import render
-from .models import Producto, Categoria
+from .models import Orden
+
+
 
 def detalleorden(request,id):
     orden=get_object_or_404(Orden, id=id)
@@ -359,7 +360,27 @@ def modificar_cliente(request):
 def agrega(request):
     return render(request, 'dash/agrega.html')
 
-def lista_productos(request):
-    productos = Producto.objects.all()
-    categorias = Categoria.objects.values_list('nombre', flat=True).distinct()
-    return render(request, 'tabla_producto', {'productos': productos, 'categorias': categorias})
+def listar_ordenes(request):
+    ordenes = Orden.objects.all()
+    
+    # Manejo del filtro por fecha
+    fecha_desde = request.GET.get('fecha_desde')
+    fecha_hasta = request.GET.get('fecha_hasta')
+    
+    if fecha_desde and fecha_hasta:
+        ordenes = ordenes.filter(fecha_creacion__range=[fecha_desde, fecha_hasta])
+    
+    context = {
+        'ordenes': ordenes
+    }
+    return render(request, 'dash/pedidos.html', context)
+
+def crear_producto(request):
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('tabla_producto')  # Redirige a la página deseada después de guardar el formulario
+    else:
+        form = ProductoForm()
+    return render(request, 'dash/crear_producto.html', {'form': form})

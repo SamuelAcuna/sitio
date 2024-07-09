@@ -1,4 +1,7 @@
-{% extends "dash/base.html" %} {% load static %} {% block contents %}
+{% extends "dash/base.html" %}
+{% load static %}
+
+{% block contents %}
 <main>
   <div class="container-fluid px-4">
     <h1 class="mt-4">Pedidos</h1>
@@ -14,11 +17,19 @@
       </div>
       
       <div class="card-body">
-        <a href="{% url "agregar_orden" %}" class="btn btn-primary">
-          Agregar Orden</a
-        >
+        <form method="GET">
+          <div class="mb-3">
+            <label for="fecha_desde" class="form-label">Desde</label>
+            <input type="date" class="form-control" id="fecha_desde" name="fecha_desde">
+          </div>
+          <div class="mb-3">
+            <label for="fecha_hasta" class="form-label">Hasta</label>
+            <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta">
+          </div>
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
         <hr />
-        <table id="datatablesSimple">
+        <table id="datatablesSimple" class="table">
           <thead>
             <tr>
               <th>Orden</th>
@@ -26,7 +37,6 @@
               <th>Cliente</th>
               <th>Total</th>
               <th>Estado</th>
-              <!--<th>Gestion</th>-->
             </tr>
           </thead>
           <tfoot>
@@ -36,32 +46,18 @@
               <th>Cliente</th>
               <th>Total</th>
               <th>Estado</th>
-              <!--<th>Gestion</th>-->
             </tr>
           </tfoot>
           <tbody>
-            <!--  'cliente', 'fecha_creacion', 'completada', 'direccion_envio', 'total'-->
-            {% for o in ordenes%}
+            {% for o in ordenes %}
             <tr>
-                <td>{{o.cliente}}</td>
-                <td>{{o.fecha_creacion}}</td>
-                <td>{{o.cliente.nombre}} {{o.cliente.apellidos}}</td>
-                <td>{{o.total}}</td>
-                <td>{{o.completada}}</td>
-                <!--<td>
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    onclick="mostrarDetalles('001')"
-                  >
-                    Ver Detalles
-                  </button>
-                </td>-->
-              </tr>
+              <td>{{ o.id }}</td>
+              <td>{{ o.fecha_creacion }}</td>
+              <td>{{ o.cliente.nombre }} {{ o.cliente.apellidos }}</td>
+              <td>{{ o.total }}</td>
+              <td>{{ o.completada }}</td>
+            </tr>
             {% endfor %}
-            
-           
-            
           </tbody>
         </table>
       </div>
